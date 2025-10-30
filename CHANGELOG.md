@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.3.1](https://github.com/pleaseai/notion/compare/v0.3.0...v0.3.1) (2025-10-30)
+
+
+### Bug Fixes
+
+* correct install script checksum handling and update README usage example ([edf920e](https://github.com/pleaseai/notion/commit/edf920e702a792c81ea61e916abeac2791d938d0))
+
+
+### Documentation
+
+* add install script instructions to README ([714dc35](https://github.com/pleaseai/notion/commit/714dc356ad8e5d8305457197280c27f02e017130))
+
 ## [0.3.0](https://github.com/pleaseai/notion/compare/v0.2.0...v0.3.0) (2025-10-30)
 
 
