@@ -1,7 +1,7 @@
 {
   "name": "notion-cli",
   "type": "module",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Notion CLI - Manage Notion from the command line",
   "author": "Minsu Lee",
   "license": "MIT",
