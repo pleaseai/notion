@@ -1,0 +1,43 @@
+{
+  "name": "notion-cli",
+  "version": "0.1.0",
+  "description": "Notion CLI - Manage Notion from the command line",
+  "type": "module",
+  "bin": {
+    "notion": "./src/index.ts"
+  },
+  "scripts": {
+    "dev": "bun run src/index.ts",
+    "build": "bun build src/index.ts --compile --outfile dist/notion",
+    "test": "bun test",
+    "test:unit": "bun test test/",
+    "test:watch": "bun test --watch",
+    "test:coverage": "bun test --coverage",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@byjohann/toon": "^0.4.1",
+    "@notionhq/client": "^2.2.14",
+    "@pleaseai/cli-toolkit": "^0.2.0",
+    "commander": "^14.0.1",
+    "es-toolkit": "^1.41.0"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@typescript-eslint/eslint-plugin": "^8.19.1",
+    "@typescript-eslint/parser": "^8.19.1",
+    "eslint": "^9.18.0",
+    "typescript": "^5.7.2"
+  },
+  "keywords": [
+    "notion",
+    "cli",
+    "api",
+    "productivity",
+    "automation"
+  ],
+  "author": "Minsu Lee",
+  "license": "MIT"
+}

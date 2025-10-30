@@ -1,0 +1,246 @@
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  pull-requests: write
+
+name: release-please
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
+    steps:
+      - uses: actions/create-github-app-token@v2
+        id: app-token
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.PRIVATE_KEY }}
+
+      - uses: googleapis/release-please-action@v4
+        id: release
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+
+  build-binaries:
+    needs: release-please
+    if: ${{ needs.release-please.outputs.release_created }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: macos-latest
+            arch: x64
+            target: darwin-x64
+          - os: macos-latest
+            arch: arm64
+            target: darwin-arm64
+          - os: ubuntu-latest
+            arch: x64
+            target: linux-x64
+          - os: ubuntu-latest
+            arch: arm64
+            target: linux-arm64
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Cache Bun dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.bun/install/cache
+          key: ${{ runner.os }}-bun-${{ hashFiles('**/bun.lockb') }}
+          restore-keys: |
+            ${{ runner.os }}-bun-
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Build binary
+        run: |
+          if [ "${{ matrix.os }}" = "macos-latest" ]; then
+            if [ "${{ matrix.arch }}" = "arm64" ]; then
+              bun build src/index.ts --compile --target=bun-darwin-arm64 --outfile notion-${{ matrix.target }}
+            else
+              bun build src/index.ts --compile --target=bun-darwin-x64 --outfile notion-${{ matrix.target }}
+            fi
+          else
+            if [ "${{ matrix.arch }}" = "arm64" ]; then
+              bun build src/index.ts --compile --target=bun-linux-arm64 --outfile notion-${{ matrix.target }}
+            else
+              bun build src/index.ts --compile --target=bun-linux-x64 --outfile notion-${{ matrix.target }}
+            fi
+          fi
+
+      - name: Generate checksum
+        run: |
+          shasum -a 256 notion-${{ matrix.target }} > notion-${{ matrix.target }}.sha256
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: notion-${{ matrix.target }}
+          path: |
+            notion-${{ matrix.target }}
+            notion-${{ matrix.target }}.sha256
+
+  upload-release-assets:
+    needs: [release-please, build-binaries]
+    if: ${{ needs.release-please.outputs.release_created }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Prepare release assets
+        run: |
+          mkdir -p release
+          find artifacts -type f -exec cp {} release/ \;
+          ls -lh release/
+
+      - name: Upload release artifacts
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release upload ${{ needs.release-please.outputs.tag_name }} \
+            release/* \
+            --clobber
+
+  update-homebrew-formula:
+    needs: [release-please, upload-release-assets]
+    if: ${{ needs.release-please.outputs.release_created }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/create-github-app-token@v2
+        id: app-token
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.PRIVATE_KEY }}
+          repositories: |
+            notion
+            homebrew-tap
+
+      - name: Checkout homebrew-tap repository
+        uses: actions/checkout@v4
+        with:
+          repository: pleaseai/homebrew-tap
+          token: ${{ steps.app-token.outputs.token }}
+          path: homebrew-tap
+
+      - name: Configure git
+        run: |
+          cd homebrew-tap
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Update Formula
+        run: |
+          VERSION=${{ needs.release-please.outputs.tag_name }}
+          VERSION_NO_V=${VERSION#v}
+
+          # Download checksums
+          curl -L -o darwin-x64.sha256 \
+            "https://github.com/${{ github.repository }}/releases/download/${VERSION}/notion-darwin-x64.sha256"
+          curl -L -o darwin-arm64.sha256 \
+            "https://github.com/${{ github.repository }}/releases/download/${VERSION}/notion-darwin-arm64.sha256"
+          curl -L -o linux-x64.sha256 \
+            "https://github.com/${{ github.repository }}/releases/download/${VERSION}/notion-linux-x64.sha256"
+          curl -L -o linux-arm64.sha256 \
+            "https://github.com/${{ github.repository }}/releases/download/${VERSION}/notion-linux-arm64.sha256"
+
+          # Extract checksums
+          DARWIN_X64_SHA256=$(cat darwin-x64.sha256 | awk '{print $1}')
+          DARWIN_ARM64_SHA256=$(cat darwin-arm64.sha256 | awk '{print $1}')
+          LINUX_X64_SHA256=$(cat linux-x64.sha256 | awk '{print $1}')
+          LINUX_ARM64_SHA256=$(cat linux-arm64.sha256 | awk '{print $1}')
+
+          # Create or update Formula
+          cd homebrew-tap
+          cat > notion-cli.rb << 'FORMULA_EOF'
+          class NotionCli < Formula
+            desc "Notion CLI - Manage Notion from the command line"
+            homepage "https://github.com/pleaseai/notion"
+            version "VERSION_PLACEHOLDER"
+            license "MIT"
+
+            on_macos do
+              if Hardware::CPU.arm?
+                url "https://github.com/pleaseai/notion/releases/download/vVERSION_PLACEHOLDER/notion-darwin-arm64"
+                sha256 "SHA256_DARWIN_ARM64_PLACEHOLDER"
+              else
+                url "https://github.com/pleaseai/notion/releases/download/vVERSION_PLACEHOLDER/notion-darwin-x64"
+                sha256 "SHA256_DARWIN_X64_PLACEHOLDER"
+              end
+            end
+
+            on_linux do
+              if Hardware::CPU.arm?
+                url "https://github.com/pleaseai/notion/releases/download/vVERSION_PLACEHOLDER/notion-linux-arm64"
+                sha256 "SHA256_LINUX_ARM64_PLACEHOLDER"
+              else
+                url "https://github.com/pleaseai/notion/releases/download/vVERSION_PLACEHOLDER/notion-linux-x64"
+                sha256 "SHA256_LINUX_X64_PLACEHOLDER"
+              end
+            end
+
+            def install
+              if OS.mac?
+                if Hardware::CPU.arm?
+                  bin.install "notion-darwin-arm64" => "notion"
+                else
+                  bin.install "notion-darwin-x64" => "notion"
+                end
+              else
+                if Hardware::CPU.arm?
+                  bin.install "notion-linux-arm64" => "notion"
+                else
+                  bin.install "notion-linux-x64" => "notion"
+                end
+              end
+            end
+
+            test do
+              assert_match version.to_s, shell_output("#{bin}/notion --version")
+            end
+          end
+          FORMULA_EOF
+
+          # Replace placeholders
+          sed -i "s/VERSION_PLACEHOLDER/${VERSION_NO_V}/g" notion-cli.rb
+          sed -i "s/SHA256_DARWIN_X64_PLACEHOLDER/${DARWIN_X64_SHA256}/" notion-cli.rb
+          sed -i "s/SHA256_DARWIN_ARM64_PLACEHOLDER/${DARWIN_ARM64_SHA256}/" notion-cli.rb
+          sed -i "s/SHA256_LINUX_X64_PLACEHOLDER/${LINUX_X64_SHA256}/" notion-cli.rb
+          sed -i "s/SHA256_LINUX_ARM64_PLACEHOLDER/${LINUX_ARM64_SHA256}/" notion-cli.rb
+
+          # Check if there are changes
+          if git diff --quiet notion-cli.rb 2>/dev/null; then
+            echo "No changes to Formula"
+            exit 0
+          fi
+
+          # Commit and push
+          git add notion-cli.rb
+          git commit -m "chore: update notion-cli to ${VERSION}"
+          git push origin main
+        env:
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
