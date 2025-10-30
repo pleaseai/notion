@@ -1,7 +1,7 @@
-import { Command } from 'commander'
-import { createNotionClient } from '../lib/notion-client.ts'
-import { handleNotionError } from '../lib/error-handler.ts'
 import type { OutputFormat } from '../utils/formatter.ts'
+import { Command } from 'commander'
+import { handleNotionError } from '../lib/error-handler.ts'
+import { createNotionClient } from '../lib/notion-client.ts'
 import { output } from '../utils/formatter.ts'
 
 /**
@@ -38,7 +38,8 @@ export function createDatabaseCommand(): Command {
         }))
 
         output({ databases, total: databases.length }, format)
-      } catch (error) {
+      }
+      catch (error) {
         handleNotionError(error, 'List databases', { limit: options.limit })
       }
     })
@@ -66,7 +67,8 @@ export function createDatabaseCommand(): Command {
         }
 
         output({ database: result }, format)
-      } catch (error) {
+      }
+      catch (error) {
         handleNotionError(error, 'Get database', { databaseId })
       }
     })
@@ -95,7 +97,8 @@ export function createDatabaseCommand(): Command {
         if (options.filter) {
           try {
             query.filter = JSON.parse(options.filter)
-          } catch {
+          }
+          catch {
             console.error('✗ Invalid filter JSON')
             console.error('  Filter must be valid JSON')
             process.exit(1)
@@ -106,7 +109,8 @@ export function createDatabaseCommand(): Command {
         if (options.sorts) {
           try {
             query.sorts = JSON.parse(options.sorts)
-          } catch {
+          }
+          catch {
             console.error('✗ Invalid sorts JSON')
             console.error('  Sorts must be valid JSON')
             process.exit(1)
@@ -133,7 +137,8 @@ export function createDatabaseCommand(): Command {
           },
           format,
         )
-      } catch (error) {
+      }
+      catch (error) {
         handleNotionError(error, 'Query database', {
           databaseId,
           filter: options.filter,
@@ -175,7 +180,8 @@ export function createDatabaseCommand(): Command {
         if (options.schema) {
           try {
             properties = JSON.parse(options.schema)
-          } catch {
+          }
+          catch {
             console.error('✗ Invalid schema JSON')
             console.error('  Schema must be valid JSON')
             process.exit(1)
@@ -200,7 +206,8 @@ export function createDatabaseCommand(): Command {
           },
           format,
         )
-      } catch (error) {
+      }
+      catch (error) {
         handleNotionError(error, 'Create database', {
           title: options.title,
           parent: options.parent,
@@ -236,7 +243,8 @@ export function createDatabaseCommand(): Command {
         if (options.schema) {
           try {
             update.properties = JSON.parse(options.schema)
-          } catch {
+          }
+          catch {
             console.error('✗ Invalid schema JSON')
             console.error('  Schema must be valid JSON')
             process.exit(1)
@@ -245,7 +253,8 @@ export function createDatabaseCommand(): Command {
 
         if (options.archive) {
           update.archived = true
-        } else if (options.unarchive) {
+        }
+        else if (options.unarchive) {
           update.archived = false
         }
 
@@ -272,7 +281,8 @@ export function createDatabaseCommand(): Command {
           },
           format,
         )
-      } catch (error) {
+      }
+      catch (error) {
         handleNotionError(error, 'Update database', {
           databaseId,
           ...options,

@@ -5,6 +5,7 @@ This document explains how to set up the Homebrew tap for the Notion CLI at http
 ## Overview
 
 The release workflow automatically:
+
 1. Builds binaries for macOS (x64, ARM64) and Linux (x64, ARM64)
 2. Creates a GitHub release with these binaries
 3. Updates the Homebrew formula in the `pleaseai/homebrew-tap` repository
@@ -24,7 +25,7 @@ Create a new repository at https://github.com/pleaseai/homebrew-tap:
 
 ### 2. Initialize the Repository
 
-```bash
+````bash
 # Clone the homebrew-tap repository
 git clone https://github.com/pleaseai/homebrew-tap.git
 cd homebrew-tap
@@ -43,7 +44,7 @@ brew tap pleaseai/tap
 
 # Install notion-cli
 brew install notion-cli
-```
+````
 
 ## Available Formulae
 
@@ -57,7 +58,8 @@ EOF
 git add README.md
 git commit -m "docs: initial README"
 git push origin main
-```
+
+````
 
 ### 3. Set Up GitHub App Token
 
@@ -94,7 +96,7 @@ If you prefer not to use a GitHub App, modify the workflow to use a PAT:
 - name: Generate token
   id: app-token
   run: echo "token=${{ secrets.GITHUB_TOKEN }}" >> $GITHUB_OUTPUT
-```
+````
 
 Note: The PAT needs `repo` and `workflow` scopes for both repositories.
 
@@ -107,7 +109,7 @@ Check that the workflow file has the correct repository references:
 - name: Checkout homebrew-tap repository
   uses: actions/checkout@v4
   with:
-    repository: pleaseai/homebrew-tap  # ✅ Correct
+    repository: pleaseai/homebrew-tap # ✅ Correct
     token: ${{ steps.app-token.outputs.token }}
     path: homebrew-tap
 ```
@@ -226,6 +228,7 @@ notion --help
 **Problem**: `Error: No available formula with the name "notion-cli"`
 
 **Solution**:
+
 1. Check if the formula exists: https://github.com/pleaseai/homebrew-tap/blob/main/notion-cli.rb
 2. Update your tap: `brew update`
 3. Try again: `brew install notion-cli`
@@ -235,6 +238,7 @@ notion --help
 **Problem**: Workflow fails with "Resource not accessible by integration"
 
 **Solution**:
+
 1. Verify GitHub App is installed on both repositories
 2. Check that App has Contents: Write permission
 3. Verify APP_ID and PRIVATE_KEY secrets are correct
@@ -245,6 +249,7 @@ notion --help
 **Problem**: Formula downloads fail with 404
 
 **Solution**:
+
 1. Check release exists: https://github.com/pleaseai/notion/releases
 2. Verify binaries are attached (notion-darwin-x64, etc.)
 3. Check URLs in formula match release tag
@@ -255,6 +260,7 @@ notion --help
 **Problem**: Homebrew reports SHA256 mismatch
 
 **Solution**:
+
 1. Re-run the release workflow to regenerate checksums
 2. Verify checksums in formula match downloaded binaries
 3. Check no one manually edited the binaries
@@ -264,6 +270,7 @@ notion --help
 **Problem**: `notion --version` shows different version than formula
 
 **Solution**:
+
 1. Verify package.json version matches release tag
 2. Check .release-please-manifest.json is up to date
 3. Ensure Bun build includes version from package.json
@@ -401,6 +408,7 @@ brew untap pleaseai/tap
 ## Support
 
 For issues with:
+
 - **Notion CLI**: https://github.com/pleaseai/notion/issues
 - **Homebrew formula**: https://github.com/pleaseai/homebrew-tap/issues
 - **Installation**: Check troubleshooting section above

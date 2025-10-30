@@ -49,13 +49,15 @@ export function encodePlain(data: unknown, indent = 0): string {
   }
 
   if (Array.isArray(data)) {
-    if (data.length === 0) return `${spaces}[]`
-    return data.map((item) => encodePlain(item, indent)).join('\n')
+    if (data.length === 0)
+      return `${spaces}[]`
+    return data.map(item => encodePlain(item, indent)).join('\n')
   }
 
   if (typeof data === 'object') {
     const entries = Object.entries(data)
-    if (entries.length === 0) return `${spaces}{}`
+    if (entries.length === 0)
+      return `${spaces}{}`
 
     return entries
       .map(([key, value]) => {

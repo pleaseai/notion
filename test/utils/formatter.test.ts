@@ -1,5 +1,5 @@
-import { test, expect } from 'bun:test'
-import { encodeToon, encodeJson, encodePlain, formatOutput } from '../../src/utils/formatter.ts'
+import { expect, test } from 'bun:test'
+import { encodeJson, encodePlain, encodeToon, formatOutput } from '../../src/utils/formatter.ts'
 
 test('encodeToon should format data in TOON format', () => {
   const data = { name: 'Test', count: 42 }

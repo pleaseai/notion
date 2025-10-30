@@ -128,14 +128,16 @@ function handleHttpError(
  */
 function logContext(context: Record<string, any>): void {
   const entries = Object.entries(context)
-  if (entries.length === 0) return
+  if (entries.length === 0)
+    return
 
   console.error('\n  Context:')
   for (const [key, value] of entries) {
     // Don't log sensitive information
     if (key.toLowerCase().includes('token') || key.toLowerCase().includes('secret')) {
       console.error(`    ${key}: [REDACTED]`)
-    } else {
+    }
+    else {
       console.error(`    ${key}: ${value}`)
     }
   }

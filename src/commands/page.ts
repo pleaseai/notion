@@ -1,7 +1,7 @@
-import { Command } from 'commander'
-import { createNotionClient } from '../lib/notion-client.ts'
-import { handleNotionError } from '../lib/error-handler.ts'
 import type { OutputFormat } from '../utils/formatter.ts'
+import { Command } from 'commander'
+import { handleNotionError } from '../lib/error-handler.ts'
+import { createNotionClient } from '../lib/notion-client.ts'
 import { output } from '../utils/formatter.ts'
 
 /**
@@ -38,7 +38,8 @@ export function createPageCommand(): Command {
         }))
 
         output({ pages, total: pages.length }, format)
-      } catch (error) {
+      }
+      catch (error) {
         handleNotionError(error, 'List pages', { limit: options.limit })
       }
     })
@@ -73,7 +74,8 @@ export function createPageCommand(): Command {
         }
 
         output({ page: result }, format)
-      } catch (error) {
+      }
+      catch (error) {
         handleNotionError(error, 'Get page', { pageId })
       }
     })
@@ -94,7 +96,8 @@ export function createPageCommand(): Command {
         if (options.parent) {
           // Try as page first, will auto-detect database
           parent = { type: 'page_id', page_id: options.parent }
-        } else {
+        }
+        else {
           console.error('✗ Parent page or database ID is required')
           console.error('  Use --parent <id> to specify where to create the page')
           process.exit(1)
@@ -148,7 +151,8 @@ export function createPageCommand(): Command {
           },
           format,
         )
-      } catch (error) {
+      }
+      catch (error) {
         handleNotionError(error, 'Create page', {
           title: options.title,
           parent: options.parent,
@@ -186,7 +190,8 @@ export function createPageCommand(): Command {
 
         if (options.archive) {
           update.archived = true
-        } else if (options.unarchive) {
+        }
+        else if (options.unarchive) {
           update.archived = false
         }
 
@@ -213,7 +218,8 @@ export function createPageCommand(): Command {
           },
           format,
         )
-      } catch (error) {
+      }
+      catch (error) {
         handleNotionError(error, 'Update page', {
           pageId,
           ...options,
@@ -237,7 +243,7 @@ function extractTitle(page: any): string {
   }
 
   // Try other common title properties
-  for (const [key, prop] of Object.entries(page.properties || {})) {
+  for (const [_key, prop] of Object.entries(page.properties || {})) {
     if ((prop as any).type === 'title' && (prop as any).title?.[0]?.plain_text) {
       return (prop as any).title[0].plain_text
     }

@@ -19,7 +19,8 @@ export async function validateToken(token: string): Promise<boolean> {
     const client = new Client({ auth: token })
     await client.users.me({})
     return true
-  } catch {
+  }
+  catch {
     return false
   }
 }

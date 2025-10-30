@@ -5,12 +5,15 @@ This document describes the testing approach for the Notion CLI project.
 ## Testing Philosophy
 
 ### Test-Driven Development (TDD)
+
 We follow the Red-Green-Refactor cycle:
+
 1. **Red**: Write a failing test
 2. **Green**: Make the test pass with minimal code
 3. **Refactor**: Improve code while keeping tests green
 
 ### Testing Pyramid
+
 ```
         /\
        /  \
@@ -27,11 +30,13 @@ We follow the Red-Green-Refactor cycle:
 ## Test Types
 
 ### Unit Tests
+
 Test individual functions and modules in isolation.
 
 **Location**: `test/lib/`, `test/utils/`
 
 **Example**:
+
 ```typescript
 test('encodeToon should format data in TOON format', () => {
   // Arrange
@@ -48,11 +53,13 @@ test('encodeToon should format data in TOON format', () => {
 ```
 
 ### Integration Tests
+
 Test interactions between components.
 
 **Location**: `test/commands/`
 
 **Example**:
+
 ```typescript
 test('auth login should save valid token', async () => {
   // Arrange
@@ -69,11 +76,13 @@ test('auth login should save valid token', async () => {
 ```
 
 ### End-to-End Tests
+
 Test complete user workflows.
 
 **Location**: `test/e2e/`
 
 **Example**:
+
 ```typescript
 test('should create and retrieve page', async () => {
   // Arrange
@@ -95,6 +104,7 @@ test('should create and retrieve page', async () => {
 ## Test Structure (AAA Pattern)
 
 ### Arrange-Act-Assert
+
 ```typescript
 test('description of what we are testing', () => {
   // Arrange: Set up test data and conditions
@@ -113,6 +123,7 @@ test('description of what we are testing', () => {
 ### When to Use Each Type
 
 #### Fakes
+
 Real implementation with shortcuts (e.g., in-memory database).
 
 ```typescript
@@ -132,6 +143,7 @@ class FakeNotionClient {
 ```
 
 #### Stubs
+
 Provide predetermined answers.
 
 ```typescript
@@ -147,6 +159,7 @@ class StubNotionClient {
 ```
 
 #### Spies
+
 Record information about calls.
 
 ```typescript
@@ -161,6 +174,7 @@ class SpyNotionClient {
 ```
 
 #### Mocks
+
 Pre-programmed with expectations.
 
 ```typescript
@@ -174,21 +188,25 @@ const mockClient = {
 ## Running Tests
 
 ### All Tests
+
 ```bash
 bun test
 ```
 
 ### Watch Mode
+
 ```bash
 bun test --watch
 ```
 
 ### Coverage
+
 ```bash
 bun test --coverage
 ```
 
 ### Specific File
+
 ```bash
 bun test test/lib/config.test.ts
 ```
@@ -196,6 +214,7 @@ bun test test/lib/config.test.ts
 ## Test Organization
 
 ### File Structure
+
 ```
 test/
 ├── commands/           # Command tests
@@ -217,6 +236,7 @@ test/
 ```
 
 ### Naming Conventions
+
 - Test files: `*.test.ts`
 - Test suites: `describe('Component name', ...)`
 - Test cases: `test('should do something', ...)`
@@ -224,6 +244,7 @@ test/
 ## Best Practices
 
 ### 1. Test Behavior, Not Implementation
+
 ```typescript
 // ✅ Good: Tests behavior
 test('should return formatted page title', () => {
@@ -239,6 +260,7 @@ test('should access properties.title.title[0].plain_text', () => {
 ```
 
 ### 2. One Assertion Per Test (When Possible)
+
 ```typescript
 // ✅ Good: Single assertion
 test('should return token when authenticated', () => {
@@ -255,15 +277,21 @@ test('should format output correctly', () => {
 ```
 
 ### 3. Use Descriptive Test Names
+
 ```typescript
 // ✅ Good: Clear description
-test('should throw error when token is missing', ...)
+test('should throw error when token is missing', () => {
+  // test implementation
+})
 
 // ❌ Bad: Vague description
-test('handles error', ...)
+test('handles error', () => {
+  // test implementation
+})
 ```
 
 ### 4. Clean Up After Tests
+
 ```typescript
 import { afterEach } from 'bun:test'
 
@@ -275,6 +303,7 @@ afterEach(() => {
 ```
 
 ### 5. Avoid Test Dependencies
+
 ```typescript
 // ✅ Good: Independent tests
 test('test 1', () => {
@@ -304,6 +333,7 @@ test('test 2', () => {
 ## Testing Async Code
 
 ### Promises
+
 ```typescript
 test('should resolve with data', async () => {
   const result = await fetchData()
@@ -312,6 +342,7 @@ test('should resolve with data', async () => {
 ```
 
 ### Error Cases
+
 ```typescript
 test('should reject with error', async () => {
   await expect(invalidOperation()).rejects.toThrow('Error message')
@@ -321,6 +352,7 @@ test('should reject with error', async () => {
 ## Testing Error Handling
 
 ### Expected Errors
+
 ```typescript
 test('should throw when not authenticated', () => {
   expect(() => requireAuth()).toThrow('Not authenticated')
@@ -328,11 +360,13 @@ test('should throw when not authenticated', () => {
 ```
 
 ### Error Messages
+
 ```typescript
 test('should provide helpful error message', () => {
   try {
     requireAuth()
-  } catch (error: any) {
+  }
+  catch (error: any) {
     expect(error.message).toContain('Run "notion auth login"')
   }
 })
@@ -341,6 +375,7 @@ test('should provide helpful error message', () => {
 ## Mocking External Dependencies
 
 ### Notion API
+
 ```typescript
 const mockNotionClient = {
   pages: {
@@ -351,6 +386,7 @@ const mockNotionClient = {
 ```
 
 ### File System
+
 ```typescript
 import * as fs from 'node:fs'
 
@@ -365,17 +401,20 @@ afterEach(() => {
 ## Coverage Goals
 
 ### Minimum Coverage
+
 - **Unit Tests**: 80% coverage
 - **Integration Tests**: Key workflows covered
 - **E2E Tests**: ≥1 happy path, ≥1 failure path
 
 ### Focus Areas
+
 1. Business logic
 2. Error handling
 3. Edge cases
 4. Security-critical code
 
 ### Acceptable Exclusions
+
 - Type definitions
 - Simple getters/setters
 - Framework boilerplate
@@ -383,12 +422,14 @@ afterEach(() => {
 ## Continuous Integration
 
 ### Pre-commit
+
 ```bash
 # Run tests before commit
 bun test
 ```
 
 ### CI Pipeline
+
 ```yaml
 - name: Test
   run: |
@@ -401,20 +442,23 @@ bun test
 ## Debugging Tests
 
 ### Print Output
+
 ```typescript
 test('debug test', () => {
   const result = someFunction()
-  console.log('Result:', result)  // Visible in test output
+  console.log('Result:', result) // Visible in test output
   expect(result).toBeDefined()
 })
 ```
 
 ### Run Single Test
+
 ```bash
 bun test -t "specific test name"
 ```
 
 ### Debug Mode
+
 ```bash
 DEBUG=1 bun test
 ```
@@ -422,11 +466,13 @@ DEBUG=1 bun test
 ## Test Maintenance
 
 ### Keep Tests Updated
+
 - Update tests when code changes
 - Remove obsolete tests
 - Refactor tests like production code
 
 ### Review Test Failures
+
 - Don't ignore failing tests
 - Fix or remove broken tests
 - Investigate flaky tests
@@ -434,6 +480,7 @@ DEBUG=1 bun test
 ## Summary
 
 Good tests are:
+
 - **Fast**: Run quickly
 - **Independent**: Don't depend on other tests
 - **Repeatable**: Same result every time

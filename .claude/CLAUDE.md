@@ -11,6 +11,7 @@ The CLI follows patterns from reference projects: gh-please, asana, and cli-tool
 ## Development Commands
 
 ### Core Workflow
+
 ```bash
 # Install dependencies
 bun install
@@ -38,11 +39,13 @@ bun run lint:fix
 ```
 
 ### Testing Strategy
+
 Tests follow AAA pattern (Arrange-Act-Assert). Config tests backup/restore real `~/.notion-cli/config.json` to avoid interfering with actual user config.
 
 ## Architecture
 
 ### Command Registration Pattern
+
 Commands are hierarchical using Commander.js factory functions:
 
 ```typescript
@@ -57,7 +60,7 @@ program
 export function createPageCommand(): Command {
   const page = new Command('page')
   page.command('list').action(async (options, command) => {
-    const format = getFormat(command)  // Get from parent
+    const format = getFormat(command) // Get from parent
     // ... implementation
   })
   return page
@@ -84,14 +87,16 @@ Three output formats are supported via `src/utils/formatter.ts`:
    - Colon-separated key-value pairs
 
 **Usage in commands:**
+
 ```typescript
-const format = getFormat(command)  // 'toon' | 'json' | 'plain'
+const format = getFormat(command) // 'toon' | 'json' | 'plain'
 output(resultData, format)
 ```
 
 ### Configuration Management
 
 Config stored in `~/.notion-cli/config.json`:
+
 - **Never** log or expose `notionToken`
 - Use `requireAuth()` to get token (throws if missing)
 - Use `loadConfig()` for optional access
@@ -104,7 +109,8 @@ Centralized via `src/lib/error-handler.ts`:
 ```typescript
 try {
   const result = await notion.pages.create(data)
-} catch (error) {
+}
+catch (error) {
   handleNotionError(error, 'Create page', {
     title: data.title,
     parent: data.parent
@@ -113,6 +119,7 @@ try {
 ```
 
 **Never** inline error handling - always use `handleNotionError()` with:
+
 1. Operation name (e.g., "Create page")
 2. Context object (non-sensitive data only)
 
@@ -123,10 +130,11 @@ Error messages provide recovery suggestions and never expose tokens.
 Created via `src/lib/notion-client.ts`:
 
 ```typescript
-const notion = createNotionClient()  // Gets token from config
+const notion = createNotionClient() // Gets token from config
 ```
 
 All Notion operations should:
+
 1. Use `createNotionClient()` to get authenticated client
 2. Wrap calls in try/catch with `handleNotionError()`
 3. Format results appropriately for output
@@ -134,24 +142,29 @@ All Notion operations should:
 ## Code Standards (Enforced)
 
 ### Size Limits
+
 - **Files**: ≤ 300 LOC (longest: database.ts at ~230 LOC)
 - **Functions**: ≤ 50 LOC
 - **Parameters**: ≤ 5 per function
 - **Cyclomatic Complexity**: ≤ 10
 
 ### TypeScript
+
 - Strict mode enabled (tsconfig.json)
 - No `any` types
 - Explicit return types for functions
 - No unchecked indexed access
 
 ### Testing
+
 - **Required**: New code needs tests, bug fixes need regression tests
 - **Pattern**: AAA (Arrange-Act-Assert)
 - **E2E minimum**: ≥1 happy path, ≥1 failure path
 
 ### Git Commits
+
 Follow Conventional Commits:
+
 ```
 feat(page): add content flag to get command
 fix(auth): handle token validation timeout
@@ -163,6 +176,7 @@ test(config): add backup/restore tests
 ## Key Design Decisions
 
 ### 1. TOON with Tab Delimiters (ADR 001)
+
 **Why**: 58.9% token reduction for LLM consumption vs JSON
 **Implementation**: `encode(data, { delimiter: '\t', indent: 2 })`
 **Trade-off**: Less universal than JSON, but massive LLM cost savings
@@ -170,16 +184,20 @@ test(config): add backup/restore tests
 Users can override with `--format json` or `--format plain`.
 
 ### 2. Global Format Flag
+
 Format is set at root command level, not per subcommand:
+
 ```bash
 notion --format json page list  # ✅ Correct
 notion page list --format json  # ❌ Wrong (won't work)
 ```
 
 ### 3. Config Location
+
 `~/.notion-cli/config.json` for user-specific, cross-platform storage. Never in project directory.
 
 ### 4. Factory Functions for Commands
+
 Each command group (auth, page, database) exports a `create*Command()` factory that returns a configured `Command` object. This allows hierarchical command registration in main entry point.
 
 ## Adding New Commands
@@ -192,6 +210,7 @@ Each command group (auth, page, database) exports a `create*Command()` factory t
 6. Use `output(data, format)` for results
 
 Example skeleton:
+
 ```typescript
 export function createBlockCommand(): Command {
   const block = new Command('block')
@@ -205,7 +224,8 @@ export function createBlockCommand(): Command {
         const notion = createNotionClient()
         const result = await notion.blocks.children.list({ block_id: pageId })
         output({ blocks: result.results }, format)
-      } catch (error) {
+      }
+      catch (error) {
         handleNotionError(error, 'List blocks', { pageId })
       }
     })
@@ -240,6 +260,7 @@ function getFormat(command: Command): OutputFormat {
 ## Runtime
 
 This project uses **Bun**, not Node.js:
+
 - Shebang: `#!/usr/bin/env bun`
 - Package manager: `bun install` (not npm/yarn)
 - Test runner: `bun test` (not jest/vitest)
@@ -249,6 +270,7 @@ This project uses **Bun**, not Node.js:
 ## Dependencies
 
 Core:
+
 - `@byjohann/toon`: TOON encoder (with tab override)
 - `@notionhq/client`: Official Notion SDK
 - `commander`: CLI framework

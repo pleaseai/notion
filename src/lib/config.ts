@@ -1,6 +1,6 @@
 import * as fs from 'node:fs'
-import * as path from 'node:path'
 import { homedir } from 'node:os'
+import * as path from 'node:path'
 
 /**
  * Configuration structure for Notion CLI
@@ -21,7 +21,8 @@ export function loadConfig(): Config | null {
   try {
     const content = fs.readFileSync(CONFIG_PATH, 'utf-8')
     return JSON.parse(content) as Config
-  } catch {
+  }
+  catch {
     return null
   }
 }

@@ -35,9 +35,11 @@ Quick reference for setting up and managing releases with Homebrew tap integrati
 - [ ] Generate private key (download .pem file)
 
 - [ ] Add secrets to notion repository:
+
   ```
   Settings → Secrets and variables → Actions → New repository secret
   ```
+
   - `APP_ID`: Your GitHub App ID
   - `PRIVATE_KEY`: Contents of .pem file
 
@@ -61,6 +63,7 @@ Quick reference for setting up and managing releases with Homebrew tap integrati
 ### Automated Release (Recommended)
 
 1. **Commit with conventional commit message:**
+
    ```bash
    git add .
    git commit -m "feat: add new feature"
@@ -160,6 +163,7 @@ Use these prefixes for automatic version bumping:
 - `ci:` - CI/CD changes
 
 Examples:
+
 ```bash
 git commit -m "feat: add database search functionality"
 git commit -m "fix: handle empty page titles correctly"
@@ -171,11 +175,13 @@ git commit -m "feat!: change auth config location"
 ### Release PR Not Created
 
 **Check:**
+
 - [ ] Commits use conventional commit format
 - [ ] GitHub Actions are enabled
 - [ ] Workflow file is correct
 
 **Fix:**
+
 ```bash
 # Manually trigger workflow
 gh workflow run release-please.yml
@@ -184,11 +190,13 @@ gh workflow run release-please.yml
 ### Binary Build Fails
 
 **Check:**
+
 - [ ] `bun install` succeeds
 - [ ] `bun run build` succeeds locally
 - [ ] All dependencies are in package.json
 
 **Fix:**
+
 ```bash
 # Test build locally
 bun run build
@@ -198,11 +206,13 @@ bun run build
 ### Homebrew Formula Update Fails
 
 **Check:**
+
 - [ ] GitHub App has access to both repositories
 - [ ] APP_ID and PRIVATE_KEY secrets are correct
 - [ ] homebrew-tap repository exists
 
 **Debug:**
+
 ```bash
 # Check workflow logs
 # Actions → update-homebrew-formula job
@@ -212,11 +222,13 @@ bun run build
 ### Installation Fails
 
 **Check:**
+
 - [ ] Formula exists in homebrew-tap
 - [ ] URLs in formula are accessible
 - [ ] Checksums match
 
 **Test:**
+
 ```bash
 # Verify binary downloads
 curl -L https://github.com/pleaseai/notion/releases/download/vX.Y.Z/notion-darwin-x64 -o test-binary
@@ -232,18 +244,21 @@ brew install --build-from-source homebrew-tap/notion-cli.rb
 If a release has issues:
 
 1. **Revert the release commit:**
+
    ```bash
    git revert <commit-hash>
    git push origin main
    ```
 
 2. **Delete the bad release:**
+
    ```bash
    gh release delete vX.Y.Z
    git push --delete origin vX.Y.Z
    ```
 
 3. **Update Homebrew formula to previous version:**
+
    ```bash
    cd homebrew-tap
    git revert HEAD

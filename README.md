@@ -145,6 +145,7 @@ notion page list --format toon
 ```
 
 **Benefits**:
+
 - 58.9% token reduction vs JSON
 - Tab-delimited for optimal tokenization
 - Maintains data structure
@@ -309,6 +310,7 @@ bun test --coverage
 **Decision**: Use TOON with tab delimiters as the default output format.
 
 **Rationale**:
+
 - 58.9% token reduction vs JSON (tab delimiter)
 - Better than 49.1% with comma delimiter
 - Tab is single-token in most LLM tokenizers
@@ -321,6 +323,7 @@ bun test --coverage
 **Decision**: Store config in `~/.notion-cli/config.json`
 
 **Rationale**:
+
 - Standard location for CLI tools
 - User-specific configuration
 - Easy to backup/restore
@@ -343,6 +346,7 @@ notion auth login
 ### Permission Denied
 
 Make sure you've shared the page/database with your integration:
+
 1. Open the page/database in Notion
 2. Click "Share"
 3. Add your integration
@@ -350,6 +354,7 @@ Make sure you've shared the page/database with your integration:
 ### Rate Limiting
 
 Notion API has rate limits. If you hit them:
+
 - Wait a moment before retrying
 - Reduce the frequency of requests
 - Use filters to minimize data transfer
@@ -373,11 +378,13 @@ Minsu Lee (@amondnet)
 ## Credits
 
 Built using patterns from:
+
 - gh-please - GitHub CLI extension
 - asana - Asana CLI
 - cli-toolkit - Shared CLI utilities
 
 Powered by:
+
 - [Bun](https://bun.sh) - Fast JavaScript runtime
 - [Commander.js](https://github.com/tj/commander.js) - CLI framework
 - [@notionhq/client](https://github.com/makenotion/notion-sdk-js) - Notion API SDK

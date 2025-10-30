@@ -1,9 +1,9 @@
 #!/usr/bin/env bun
 import { Command } from 'commander'
-import { createAuthCommand } from './commands/auth.ts'
-import { createPageCommand } from './commands/page.ts'
-import { createDatabaseCommand } from './commands/database.ts'
 import packageJson from '../package.json'
+import { createAuthCommand } from './commands/auth.ts'
+import { createDatabaseCommand } from './commands/database.ts'
+import { createPageCommand } from './commands/page.ts'
 
 /**
  * Main CLI program

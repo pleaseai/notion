@@ -1,8 +1,8 @@
-import { Command } from 'commander'
-import { loadConfig, saveConfig, deleteConfig } from '../lib/config.ts'
-import { validateToken } from '../lib/notion-client.ts'
-import { handleNotionError } from '../lib/error-handler.ts'
 import type { OutputFormat } from '../utils/formatter.ts'
+import { Command } from 'commander'
+import { deleteConfig, loadConfig, saveConfig } from '../lib/config.ts'
+import { handleNotionError } from '../lib/error-handler.ts'
+import { validateToken } from '../lib/notion-client.ts'
 import { output } from '../utils/formatter.ts'
 
 /**
@@ -26,6 +26,7 @@ export function createAuthCommand(): Command {
           console.error('Enter your Notion integration token:')
           console.error('(Get it from https://www.notion.so/my-integrations)')
           // Read from stdin
+          // eslint-disable-next-line no-alert
           const input = prompt('Token: ')
           if (!input) {
             console.error('✗ Token is required')
@@ -55,7 +56,8 @@ export function createAuthCommand(): Command {
           },
           format,
         )
-      } catch (error) {
+      }
+      catch (error) {
         handleNotionError(error, 'Authentication', { operation: 'login' })
       }
     })
@@ -119,7 +121,8 @@ export function createAuthCommand(): Command {
             },
             format,
           )
-        } else {
+        }
+        else {
           output(
             {
               authenticated: false,
@@ -128,7 +131,8 @@ export function createAuthCommand(): Command {
             format,
           )
         }
-      } catch (error) {
+      }
+      catch (error) {
         handleNotionError(error, 'Status check', { operation: 'status' })
       }
     })

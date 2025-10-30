@@ -5,35 +5,43 @@ This document outlines the engineering standards for the Notion CLI project.
 ## Core Principles
 
 ### 1. Read Before Change
+
 Always read the entire file before making any modifications. Never make changes without understanding the full context.
 
 ### 2. Small Changes
+
 - Keep commits small and focused
 - Keep PRs small and reviewable
 - Break large tasks into smaller, independent pieces
 - Each change should have a single, clear purpose
 
 ### 3. Document Assumptions
+
 Record all assumptions in:
+
 - Issue descriptions
 - PR descriptions
 - Architecture Decision Records (ADRs)
 - Code comments (when necessary)
 
 ### 4. No Secrets
+
 - Never commit API keys, tokens, or secrets
 - Never log sensitive information
 - Use environment variables for configuration
 - Add sensitive patterns to .gitignore
 
 ### 5. Intention-Revealing Names
+
 - Use clear, descriptive names for variables, functions, and files
 - Names should reveal intent without needing comments
 - Prefer longer, clear names over short, cryptic ones
 - Follow consistent naming conventions
 
 ### 6. Compare Options
+
 Before implementing:
+
 - Identify at least 2 different approaches
 - Document trade-offs of each approach
 - Choose the simplest solution that works
@@ -42,21 +50,25 @@ Before implementing:
 ## Code Quality Standards
 
 ### File Size Limits
+
 - **Maximum**: 300 lines of code per file
 - Split large files into smaller, focused modules
 - Each file should have a single, clear responsibility
 
 ### Function Size Limits
+
 - **Maximum**: 50 lines of code per function
 - Extract complex logic into helper functions
 - Each function should do one thing well
 
 ### Parameter Limits
+
 - **Maximum**: 5 parameters per function
 - Use objects for functions with many parameters
 - Consider builder patterns for complex construction
 
 ### Cyclomatic Complexity
+
 - **Maximum**: 10
 - Reduce complexity through:
   - Early returns
@@ -67,6 +79,7 @@ Before implementing:
 ## TypeScript Standards
 
 ### Type Safety
+
 ```typescript
 // ✅ Good: Explicit types
 function processData(data: UserData): ProcessedResult {
@@ -80,12 +93,14 @@ function processData(data: any): any {
 ```
 
 ### Strict Mode
+
 - Enable all strict type checking options
 - No implicit any
 - Strict null checks
 - No unchecked indexed access
 
 ### Type Definitions
+
 ```typescript
 // ✅ Good: Well-defined interfaces
 interface Config {
@@ -100,6 +115,7 @@ type Config = Record<string, any>
 ## Testing Standards
 
 ### Test Coverage
+
 - New code requires new tests
 - Bug fixes need regression tests
 - Minimum coverage per test type:
@@ -108,6 +124,7 @@ type Config = Record<string, any>
   - Integration: All API interactions
 
 ### Test Structure (AAA Pattern)
+
 ```typescript
 test('should create page with valid data', async () => {
   // Arrange
@@ -124,6 +141,7 @@ test('should create page with valid data', async () => {
 ```
 
 ### Test Doubles
+
 - **Fakes**: Working implementations with shortcuts
 - **Stubs**: Provide predetermined answers
 - **Spies**: Record information about calls
@@ -132,24 +150,28 @@ test('should create page with valid data', async () => {
 ## Error Handling
 
 ### Centralized Errors
+
 ```typescript
 // ✅ Good: Centralized error handler
 try {
   await notion.pages.create(data)
-} catch (error) {
+}
+catch (error) {
   handleNotionError(error, 'Create page', { title: data.title })
 }
 
 // ❌ Bad: Inline error handling
 try {
   await notion.pages.create(data)
-} catch (error) {
+}
+catch (error) {
   console.error('Error:', error.message)
   process.exit(1)
 }
 ```
 
 ### Helpful Error Messages
+
 - Include context information
 - Suggest recovery actions
 - Never expose sensitive data
@@ -158,7 +180,9 @@ try {
 ## Git Workflow
 
 ### Commit Messages
+
 Follow Conventional Commits:
+
 ```
 type(scope): description
 
@@ -168,6 +192,7 @@ type(scope): description
 ```
 
 Types:
+
 - `feat`: New feature
 - `fix`: Bug fix
 - `docs`: Documentation changes
@@ -176,6 +201,7 @@ Types:
 - `chore`: Maintenance tasks
 
 ### Branch Naming
+
 ```
 feature/short-description
 fix/issue-123
@@ -185,6 +211,7 @@ refactor/component-name
 ## Code Review Guidelines
 
 ### Before Requesting Review
+
 - [ ] All tests pass
 - [ ] Code follows standards
 - [ ] Documentation updated
@@ -192,6 +219,7 @@ refactor/component-name
 - [ ] No commented-out code
 
 ### As a Reviewer
+
 - Focus on:
   - Logic errors
   - Security issues
@@ -204,12 +232,14 @@ refactor/component-name
 ## Performance Guidelines
 
 ### Efficiency
+
 - Minimize API calls
 - Cache when appropriate
 - Use pagination for large datasets
 - Avoid unnecessary computation
 
 ### Memory
+
 - Clean up resources
 - Avoid memory leaks
 - Use streams for large data
@@ -218,12 +248,14 @@ refactor/component-name
 ## Security Guidelines
 
 ### Authentication
+
 - Store tokens securely
 - Never log tokens
 - Validate all inputs
 - Use principle of least privilege
 
 ### Data Handling
+
 - Sanitize user input
 - Validate API responses
 - Handle errors gracefully
@@ -232,19 +264,23 @@ refactor/component-name
 ## Documentation Standards
 
 ### Code Comments
+
 Only when necessary:
+
 - Why, not what
 - Complex algorithms
 - Non-obvious behavior
 - Temporary workarounds (with TODO)
 
 ### README
+
 - Clear installation instructions
 - Usage examples
 - Troubleshooting section
 - Contributing guidelines
 
 ### API Documentation
+
 - All public functions documented
 - Parameters described
 - Return values explained
@@ -267,6 +303,7 @@ Only when necessary:
 ## Summary
 
 Follow these standards to maintain:
+
 - **Quality**: High code quality
 - **Consistency**: Predictable codebase
 - **Maintainability**: Easy to modify

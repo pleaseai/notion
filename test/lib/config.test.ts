@@ -1,8 +1,8 @@
-import { test, expect, beforeEach, afterEach } from 'bun:test'
 import * as fs from 'node:fs'
-import * as path from 'node:path'
 import { homedir } from 'node:os'
-import { loadConfig, saveConfig, deleteConfig, requireAuth } from '../../src/lib/config.ts'
+import * as path from 'node:path'
+import { afterEach, beforeEach, expect, test } from 'bun:test'
+import { deleteConfig, loadConfig, requireAuth, saveConfig } from '../../src/lib/config.ts'
 
 const CONFIG_DIR = path.join(homedir(), '.notion-cli')
 const CONFIG_PATH = path.join(CONFIG_DIR, 'config.json')

@@ -2,10 +2,11 @@
   "compilerOptions": {
     "target": "ESNext",
     "lib": ["ESNext"],
+    "moduleDetection": "force",
     "module": "Preserve",
     "moduleResolution": "bundler",
-    "moduleDetection": "force",
     "resolveJsonModule": true,
+    "types": ["bun-types"],
     "allowImportingTsExtensions": true,
     "allowJs": true,
     "strict": true,
@@ -14,8 +15,7 @@
     "noUncheckedIndexedAccess": true,
     "noEmit": true,
     "verbatimModuleSyntax": true,
-    "skipLibCheck": true,
-    "types": ["bun-types"]
+    "skipLibCheck": true
   },
   "include": ["src/**/*", "test/**/*"],
   "exclude": ["node_modules", "dist"]
