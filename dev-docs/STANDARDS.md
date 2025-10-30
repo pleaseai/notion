@@ -199,6 +199,11 @@ Types:
 - `refactor`: Code refactoring
 - `test`: Adding tests
 - `chore`: Maintenance tasks
+- `ci`: Continuous integration
+- `style`: Formatting, missing semi colons, etc
+- `perf`: Performance improvements
+- `revert`: Revert to a commit
+- `wip`: Work in progress
 
 ### Branch Naming
 
