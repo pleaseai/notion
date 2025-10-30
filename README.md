@@ -15,6 +15,21 @@ A command-line interface for managing Notion pages and databases, optimized for 
 
 ## Installation
 
+### Install Script (All Platforms)
+
+Quick installation for macOS and Linux:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/pleaseai/notion/main/scripts/install.sh | sh
+```
+
+This will:
+- Detect your OS and architecture
+- Download the latest release binary
+- Verify checksums
+- Install to `~/.local/bin/notion`
+- Provide PATH setup instructions if needed
+
 ### Homebrew (macOS and Linux)
 
 ```bash
