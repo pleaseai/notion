@@ -55,12 +55,12 @@ jobs:
       - name: Verify build output
         shell: bash
         run: |
-          if [ ! -f notion ]; then
+          if [ ! -f dist/notion ]; then
             echo "Build failed: notion binary not found"
             exit 1
           fi
-          chmod +x notion
-          ./notion --version
+          chmod +x dist/notion
+          ./dist/notion --version
 
   lint:
     name: Lint
