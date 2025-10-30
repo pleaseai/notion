@@ -20,7 +20,7 @@ A command-line interface for managing Notion pages and databases, optimized for 
 Quick installation for macOS and Linux:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/pleaseai/notion/main/scripts/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/pleaseai/notion/main/scripts/install.sh | bash
 ```
 
 This will:

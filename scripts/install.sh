@@ -89,6 +89,10 @@ install_notion() {
         # Verify checksum
         echo "Verifying checksum..."
         cd "$TEMP_DIR"
+        # Fix the checksum file to match our binary name
+        sed "s/${BINARY_NAME}-${PLATFORM}/${BINARY_NAME}/" "${BINARY_NAME}.sha256" > "${BINARY_NAME}.sha256.tmp"
+        mv "${BINARY_NAME}.sha256.tmp" "${BINARY_NAME}.sha256"
+
         if command -v shasum &> /dev/null; then
             shasum -a 256 -c "${BINARY_NAME}.sha256" || {
                 echo -e "${RED}Error: Checksum verification failed${NC}"
